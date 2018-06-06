@@ -18,6 +18,16 @@ public class Exercise4 {
 
     private static class LazyCollectionHelper<T, R> {
 
+        private List<T> source;
+        private Function<T,List<R>> mapping;
+
+
+        private LazyCollectionHelper(Function<T,List<R>>mapping,List<T>source){
+            this.mapping=mapping;
+            this.source=source;
+        }
+
+
         public static <T> LazyCollectionHelper<T, T> from(List<T> list) {
             throw new UnsupportedOperationException();
         }
