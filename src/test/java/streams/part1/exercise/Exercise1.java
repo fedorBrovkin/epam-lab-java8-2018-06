@@ -1,5 +1,6 @@
 package streams.part1.exercise;
 
+import java.util.stream.Collectors;
 import lambda.data.Employee;
 import lambda.data.JobHistoryEntry;
 import lambda.data.Person;
@@ -17,7 +18,12 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация, использовать Collectors.toList()
-        List<Person> personsEverWorkedInEpam = null;
+        List<Person> personsEverWorkedInEpam = employees.stream()
+            .filter(employee -> employee.getJobHistory()
+                .stream()
+                .anyMatch(jobHistoryEntry -> jobHistoryEntry.getEmployer().equals("EPAM")))
+            .map(Employee::getPerson).collect(
+            Collectors.toList());
 
         List<Person> expected = Arrays.asList(
                 employees.get(0).getPerson(),
@@ -32,7 +38,12 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация, использовать Collectors.toList()
-        List<Person> startedFromEpam = null;
+        List<Person> startedFromEpam = employees
+            .stream()
+            .filter(employee -> employee.getJobHistory().iterator().hasNext()
+                &&employee.getJobHistory().iterator().next().getEmployer().equals("EPAM"))
+            .map(Employee::getPerson)
+            .collect(Collectors.toList());
 
         List<Person> expected = Arrays.asList(
                 employees.get(0).getPerson(),
@@ -46,7 +57,11 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация, использовать Collectors.toSet()
-        Set<String> companies = null;
+        Set<String> companies = employees.stream()
+            .flatMap(employee -> employee.getJobHistory().stream())
+            .map(jobHistoryEntry -> jobHistoryEntry.getEmployer())
+            .collect(Collectors.toSet());
+
 
         Set<String> expected = new HashSet<>();
         expected.add("EPAM");
@@ -62,7 +77,11 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация
-        Integer minimalAge = null;
+        Integer minimalAge = employees.stream()
+            .map(employee -> employee.getPerson())
+            .map(person -> person.getAge())
+            .min(Integer::compareTo)
+            .get();
 
         assertEquals(21, minimalAge.intValue());
     }
