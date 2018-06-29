@@ -1,12 +1,62 @@
 package api.exercise;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
+import java.util.Arrays;
+import java.util.function.BinaryOperator;
 import org.junit.Test;
 
-import java.util.function.BinaryOperator;
-
-import static org.junit.Assert.*;
-
 public class Exercise2 {
+
+    /**
+     * Выполняет операцию сканирования в однопоточном режиме. Не модифицирует исходный набор
+     * данных.
+     *
+     * @param source Массив исходных элементов.
+     * @param operator Оператор сканирования.
+     * @return Результат сканирования.
+     * @see <a href="https://habr.com/company/epam_systems/blog/247805">Сканирование</a>
+     */
+    private static <T> T[] sequentialPrefix(T[] source, BinaryOperator<T> operator) {
+        T[] result = Arrays.copyOf(source, source.length);//()T[]) new Object[source.length];
+        for (int i = 1; i < result.length; ++i) {
+            result[i] = operator.apply(result[i - 1], result[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Вычисляет двоичный логарифм положительного числа.
+     *
+     * @param value Аргумент.
+     * @return Логарифм по основанию 2 от аргумента.
+     * @throws IllegalArgumentException Если {@code value <= 0}
+     */
+    private static int log2(int value) throws IllegalArgumentException {
+        if (value <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return (int) (Math.log(value) / Math.log(2));
+    }
+
+    /**
+     * Возводит неотрицательное число в неотрицательную степень.
+     *
+     * @param base Основание степени.
+     * @param degree Показатель степени.
+     * @return Значение {@code base}<sup>{@code degree}</sup>
+     * @throws IllegalArgumentException Если {@code base < 0} или {@code degree < 0}
+     */
+    private static int pow(int base, int degree) throws IllegalArgumentException {
+        if (base < 0 || degree < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return (int) Math.pow(base, degree);
+    }
 
     @Test
     public void sequentialPrefixTestSum() {
@@ -38,18 +88,6 @@ public class Exercise2 {
         assertArrayEquals(new Integer[]{1, 2, 3, 3, 3, 5, 7, 7}, result);
     }
 
-    /**
-     * Выполняет операцию сканирования в однопоточном режиме.
-     * Не модифицирует исходный набор данных.
-     * @param source Массив исходных элементов.
-     * @param operator Оператор сканирования.
-     * @return Результат сканирования.
-     * @see <a href="https://habr.com/company/epam_systems/blog/247805">Сканирование</a>
-     */
-    private static <T> T[] sequentialPrefix(T[] source, BinaryOperator<T> operator) {
-        throw new UnsupportedOperationException();
-    }
-
     @Test
     public void log2TestNormalCases() {
         assertEquals(0, log2(1));
@@ -67,16 +105,6 @@ public class Exercise2 {
     @Test(expected = IllegalArgumentException.class)
     public void log2WithNegativeValuesShouldFail() {
         log2(Integer.MIN_VALUE);
-    }
-
-    /**
-     * Вычисляет двоичный логарифм положительного числа.
-     * @param value Аргумент.
-     * @return Логарифм по основанию 2 от аргумента.
-     * @throws IllegalArgumentException Если {@code value <= 0}
-     */
-    private static int log2(int value) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
     }
 
     @Test
@@ -97,16 +125,5 @@ public class Exercise2 {
     @Test(expected = IllegalArgumentException.class)
     public void powWithNegativeDegreeShouldFail() {
         pow(0, -1);
-    }
-
-    /**
-     * Возводит неотрицательное число в неотрицательную степень.
-     * @param base Основание степени.
-     * @param degree Показатель степени.
-     * @return Значение {@code base}<sup>{@code degree}</sup>
-     * @throws IllegalArgumentException Если {@code base < 0} или {@code degree < 0}
-     */
-    private static int pow(int base, int degree) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
     }
 }
