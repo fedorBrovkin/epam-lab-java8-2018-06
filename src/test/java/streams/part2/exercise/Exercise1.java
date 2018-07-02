@@ -1,5 +1,8 @@
 package streams.part2.exercise;
 
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.swing.text.Position;
 import lambda.data.Employee;
 import lambda.data.JobHistoryEntry;
 import lambda.data.Person;
@@ -17,7 +20,12 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация
-        Long hours = null;
+        Long hours = employees.stream().map(Employee::getJobHistory)
+            .flatMap(Collection::stream)
+            .filter(e -> e.getEmployer().equals("EPAM"))
+            .mapToLong(e -> e.getDuration())
+            .sum();
+
 
         assertEquals(19, hours.longValue());
     }
@@ -27,7 +35,11 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация
-        Set<Person> workedAsQa = null;
+        Set<Person> workedAsQa = employees.stream()
+            .filter(employee -> employee.getJobHistory().stream()
+                .anyMatch(jobHistoryEntry -> jobHistoryEntry.getPosition().equals("QA")))
+            .map(Employee::getPerson)
+            .collect(Collectors.toSet());
 
         assertEquals(new HashSet<>(Arrays.asList(
                 employees.get(2).getPerson(),
@@ -74,11 +86,17 @@ public class Exercise1 {
     @SuppressWarnings("Duplicates")
     public void groupPersonsByFirstPositionUsingGroupingByCollector() {
         List<Employee> employees = getEmployees();
+        Function<Employee,String> getFirstPosition = (Employee employee) -> {
+         if(employee.getJobHistory().iterator().hasNext())
+             return employee.getJobHistory().iterator().next().getPosition();
+         return null;
+        };
+                // TODO реализация
+                Map<String, Set<Person>> result = employees.stream()
+                    .collect(Collectors
+                        .groupingBy(getFirstPosition,Collectors.mapping(Employee::getPerson,Collectors.toSet())));
 
-        // TODO реализация
-        Map<String, Set<Person>> result = null;
-
-        Map<String, Set<Person>> expected = new HashMap<>();
+                        Map<String, Set<Person>> expected = new HashMap<>();
         expected.put("QA", new HashSet<>(Arrays.asList(employees.get(2).getPerson(), employees.get(5).getPerson())));
         expected.put("dev", Collections.singleton(employees.get(0).getPerson()));
         expected.put("tester", new HashSet<>(Arrays.asList(
